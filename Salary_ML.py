@@ -24,24 +24,23 @@ def clean_data(df):
     6. Create dummy columns for all the categorical variables, drop the original columns
     '''
     # Drop rows with missing salary values
-    df = df.dropna(subset=['Salary'], axis=0)
+    X = df.dropna(subset=['Salary'], axis=0)
     y = df['Salary']
 
     #Drop respondent and expected salary columns
-    df = df.drop(['Respondent', 'ExpectedSalary', 'Salary'], axis=1)
+    X = X.drop(['Respondent', 'ExpectedSalary', 'Salary'], axis=1)
 
     # Fill numeric columns with the mean
-    num_vars = df.select_dtypes(include=['float', 'int']).columns
+    num_vars = X.select_dtypes(include=['float', 'int']).columns
     for col in num_vars:
-        df[col].fillna((df[col].mean()), inplace=True)
+        X[col].fillna((X[col].mean()), inplace=True)
 
     # Dummy the categorical variables
-    cat_vars = df.select_dtypes(include=['object']).copy().columns
-    for var in  cat_vars:
+    cat_vars = X.select_dtypes(include=['object']).copy().columns
+    for var in cat_vars:
         # for each cat add dummy var, drop original column
-        df = pd.concat([df.drop(var, axis=1), pd.get_dummies(df[var], prefix=var, prefix_sep='_', drop_first=True)], axis=1)
-
-    X = df
+        X = pd.concat([X.drop(var, axis=1), pd.get_dummies(X[var], prefix=var, prefix_sep='_', drop_first=True)], axis=1)
+        
     return X, y
 
 def find_optimal_lm_mod(X, y, cutoffs, test_size = .30, random_state=42, plot=True):
